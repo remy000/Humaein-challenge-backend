@@ -22,11 +22,10 @@ from app.models import EligibilityRequest, Remittance, Denial, Resubmission, Rec
 app = FastAPI()
 
 # Allow frontend (localhost:3000) to access backend APIs
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
-allowed_origins_list = [origin.strip() for origin in allowed_origins.split(",")]
+allowed_origins = os.getenv("ALLOWED_ORIGINS")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins_list,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
