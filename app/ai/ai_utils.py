@@ -62,11 +62,26 @@ from transformers import pipeline
 #         return f"AI error: {str(e)}"
 
 # Load distilgpt2 model (small, fast, open-access, good for CPU)
-small_model =  pipeline("text2text-generation", model="google/flan-t5-base")
+
+# Hugging Face Inference API for flan-t5-base
+HF_API_KEY = os.getenv("HF_API_KEY")  # Set this in Railway or your .env
+HF_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
+headers = {"Authorization": f"Bearer {HF_API_KEY}"} if HF_API_KEY else {}
 
 def ai_request(prompt: str) -> str:
-    result = small_model(prompt, max_new_tokens=100, do_sample=True)
-    return result[0]['generated_text'].strip()
+    if not HF_API_KEY:
+        return f"[Mock AI Response] (No Hugging Face API key set): {prompt}"
+    try:
+        response = requests.post(HF_API_URL, headers=headers, json={"inputs": prompt})
+        if response.status_code != 200:
+            return f"AI error: {response.status_code} - {response.text}"
+        result = response.json()
+        # Hugging Face returns a list of dicts; extract text safely
+        if isinstance(result, list) and len(result) > 0:
+            return result[0].get("generated_text", str(result))
+        return str(result)
+    except Exception as e:
+        return f"AI error: {str(e)}"
 
 
 def extract_eligibility_info(patient_name: str, insurance_id: str) -> dict:
