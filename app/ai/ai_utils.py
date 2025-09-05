@@ -1,8 +1,7 @@
 # OpenAI integration for AI requests
-import openai
 import os
 import requests
-from transformers import pipeline
+
 # OpenAI integration for AI requests
 
 # def ai_request(prompt: str, max_tokens: int = 100) -> str:
