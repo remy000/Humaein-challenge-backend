@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 from app.api.eligibility import router as eligibility_router
 from app.api.prior_auth import router as prior_auth_router
 from app.api.coding import router as coding_router
@@ -18,12 +19,16 @@ from app.db import SessionLocal, engine
 from app.models import EligibilityRequest, Remittance, Denial, Resubmission, Reconciliation, PriorAuth, Base
 
 
+
+# Read allowed origins from environment variable, fallback to localhost
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+allowed_origins_list = [origin.strip() for origin in allowed_origins.split(",")]
 app = FastAPI()
 
 # Allow frontend (localhost:3000) to access backend APIs
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=allowed_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

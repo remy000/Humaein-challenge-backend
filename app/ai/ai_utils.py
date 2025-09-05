@@ -1,5 +1,4 @@
 # OpenAI integration for AI requests
-import openai
 import os
 import requests
 from transformers import pipeline
